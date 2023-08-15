@@ -1,8 +1,7 @@
 let a = '';
 let b = '';
-let result = null;
 let currentOperator = null;
-let lastOperator = null;
+let result = null;
 shouldResetDisplay = false;
 
 const display = document.querySelector('.display');
@@ -22,15 +21,22 @@ operators.forEach(operator => operator.addEventListener('click',
 () => setOperation(operator.textContent)));
 
 equalBtn.addEventListener('click', operate);
-
 allClearBtn.addEventListener('click', clear);
-
 clearBtn.addEventListener('click', backspace);
-
+percentBtn.addEventListener('click', calculatePercentage)
 decimalBtn.addEventListener('click', addDecimalPoint);
-
 signBtn.addEventListener('click', changeSign);
 
+window.addEventListener('keydown', determineKey);
+
+
+function determineKey(e) {
+  if (e.key >= 0 && e.key <= 9 ) updateDisplay(e.key);
+  else if (e.key === '+' || e.key === '-' || e.key === '*' || e.key === '/') setOperation(e.key);
+  else if (e.key === 'Enter' || e.key === '=') operate();
+  else if (e.key === 'Backspace') backspace();
+  else if (e.key === 'Escape') clear();
+}
 
 function updateDisplay(number) {
   if (display.textContent === '0' || shouldResetDisplay) {
@@ -53,19 +59,17 @@ function setOperation(operator) {
 }
 
 function operate() {
-  if (currentOperator === null) currentOperator = lastOperator; 
+  if (currentOperator === null || shouldResetDisplay) return;
 
   b = display.textContent;
   
-  if (currentOperator === null) return;
-  if (currentOperator === '+') add(a, b);
-  if (currentOperator === '-') subtract(a, b);
-  if (currentOperator === 'x') multiply(a, b);
-  if (currentOperator === '÷') divide(a, b);
+  if (currentOperator === '+') add();
+  if (currentOperator === '-') subtract();
+  if (currentOperator === '*') multiply();
+  if (currentOperator === '/') divide();
 
   showResult(`${result}`);
 
-  lastOperator = currentOperator;
   currentOperator = null;
 }
 
@@ -81,15 +85,21 @@ function clear() {
   a = '';
   b = '';
   currentOperator = null;
-  lastOperator = null;
   result = null;
+  shouldResetDisplay = false;
   display.textContent = '0';
 }
 
 function backspace() {
+  if (shouldResetDisplay) return;
+
   if (display.textContent.length === 1) display.textContent = '0';
   else display.textContent = display.textContent
                                     .slice(0, display.textContent.length - 1);
+}
+
+function calculatePercentage() {
+  display.textContent = display.textContent / 100;
 }
 
 function addDecimalPoint() {
@@ -99,20 +109,22 @@ function addDecimalPoint() {
 
 function changeSign() {
   if (display.textContent === '0') return;
+  
   if (display.textContent.includes('-')) {
     display.textContent = display.textContent.slice(1);
   } else display.textContent = '-' + display.textContent;
 }
 
-function add(a, b) {
+function add() {
   result = (+a) + (+b);
 }
-function subtract(a, b) {
+function subtract() {
   result = a - b;
 }
-function multiply(a, b) {
+function multiply() {
   result = a * b;
 }
-function divide(a, b) {
-  result = a / b;
+function divide() {
+  if (b === '0') result = 'error';
+  else result = a / b;
 }

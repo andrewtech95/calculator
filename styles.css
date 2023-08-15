@@ -73,6 +73,20 @@ body {
   cursor: pointer;
 }
 
+#allClearBtn,
+#clearBtn {
+  background-color: #ff0000;
+}
+
+#equalBtn {
+  background-color: #00b300;
+}
+
+.operator {
+  background-color: #ff6600;
+}
+
 .btn:hover {
   background-color: var(--btn-hover);
 }
+
